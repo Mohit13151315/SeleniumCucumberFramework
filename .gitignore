@@ -1,5 +1,5 @@
 target/
-reports/
+/reports/
 .idea/
 *.iml
 .classpath
