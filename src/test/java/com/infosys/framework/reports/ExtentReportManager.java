@@ -14,6 +14,8 @@ public class ExtentReportManager {
     private static ExtentReports extentReports;
     private static String reportPath;
     private static String reportDirectoryPath;
+    private static String latestReportPath;
+    private static String latestReportDirectoryPath;
     private static final String RUN_TIMESTAMP = LocalDateTime.now()
             .format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
 
@@ -24,22 +26,29 @@ public class ExtentReportManager {
         if (extentReports == null) {
             String tagName = getTagNameForReport();
             Path reportDirectory = Paths.get("reports", "extent-reports", tagName + "_" + RUN_TIMESTAMP);
+            Path latestReportDirectory = Paths.get("reports", "latest");
 
             try {
                 Files.createDirectories(reportDirectory);
+                Files.createDirectories(latestReportDirectory);
             } catch (Exception e) {
                 throw new RuntimeException("Failed to create Extent report folder", e);
             }
 
             reportDirectoryPath = reportDirectory.toString();
             reportPath = reportDirectory.resolve("AutomationReport.html").toString();
+            latestReportDirectoryPath = latestReportDirectory.toString();
+            latestReportPath = latestReportDirectory.resolve("AutomationReport.html").toString();
 
             ExtentSparkReporter sparkReporter = new ExtentSparkReporter(reportPath);
+            ExtentSparkReporter latestSparkReporter = new ExtentSparkReporter(latestReportPath);
             sparkReporter.config().setDocumentTitle("Selenium Cucumber Automation Report");
             sparkReporter.config().setReportName("Infosys Interview Demo Framework - " + tagName);
+            latestSparkReporter.config().setDocumentTitle("Selenium Cucumber Automation Report");
+            latestSparkReporter.config().setReportName("Infosys Interview Demo Framework - Latest");
 
             extentReports = new ExtentReports();
-            extentReports.attachReporter(sparkReporter);
+            extentReports.attachReporter(sparkReporter, latestSparkReporter);
             extentReports.setSystemInfo("Framework", "Selenium Java Cucumber Maven");
             extentReports.setSystemInfo("Report Type", "Extent HTML Report");
             extentReports.setSystemInfo("Tag", tagName);
@@ -60,11 +69,22 @@ public class ExtentReportManager {
         return reportPath;
     }
 
+    public static String getLatestReportPath() {
+        return latestReportPath;
+    }
+
     public static String getReportDirectoryPath() {
         if (reportDirectoryPath == null) {
             getReport();
         }
         return reportDirectoryPath;
+    }
+
+    public static String getLatestReportDirectoryPath() {
+        if (latestReportDirectoryPath == null) {
+            getReport();
+        }
+        return latestReportDirectoryPath;
     }
 
     private static String getTagNameForReport() {

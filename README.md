@@ -249,9 +249,12 @@ Extent HTML report is generated automatically after test execution:
 
 ```text
 reports/extent-reports/<tag>_<timestamp>/AutomationReport.html
+reports/latest/AutomationReport.html
 ```
 
 Screenshots for failed scenarios are stored under the same report folder.
+
+Use `reports/latest/AutomationReport.html` for Jenkins HTML Publisher because it is a stable path for every run.
 
 ## Interview Explanation
 
