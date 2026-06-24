@@ -1,5 +1,6 @@
 package com.infosys.framework.factory;
 
+import com.infosys.framework.reports.ExtentTestManager;
 import com.infosys.framework.utils.ConfigReader;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -20,17 +21,26 @@ public class DriverFactory {
         String browser = ConfigReader.getRuntimeValue("browser");
         String executionMode = ConfigReader.getRuntimeValue("executionMode");
 
+        ExtentTestManager.info("Initializing WebDriver");
+        ExtentTestManager.info("Browser selected: " + browser);
+        ExtentTestManager.info("Execution mode selected: " + executionMode);
+
         WebDriver driver;
         if ("remote".equalsIgnoreCase(executionMode)) {
+            ExtentTestManager.info("Creating remote driver using Selenium Grid");
             driver = createRemoteDriver(browser);
         } else {
+            ExtentTestManager.info("Creating local browser driver");
             driver = createLocalDriver(browser);
         }
 
         driver.manage().window().maximize();
+        ExtentTestManager.info("Browser window maximized");
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(Integer.parseInt(ConfigReader.get("implicitWait"))));
         driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(Integer.parseInt(ConfigReader.get("pageLoadTimeout"))));
+        ExtentTestManager.info("Browser waits configured");
         DRIVER.set(driver);
+        ExtentTestManager.info("WebDriver initialized successfully");
     }
 
     public static WebDriver getDriver() {
@@ -48,6 +58,7 @@ public class DriverFactory {
     public static void quitDriver() {
         WebDriver driver = DRIVER.get();
         if (driver != null) {
+            ExtentTestManager.info("Closing browser and removing WebDriver instance");
             driver.quit();
             DRIVER.remove();
         }
